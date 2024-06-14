@@ -1,6 +1,5 @@
 .App {
   text-align: center;
-  background-color: rgb(24 24 27);
 }
 
 .App-logo {
@@ -38,25 +37,3 @@
   }
 }
 
-.MuiToolbar-root {
-  background-color: #192734;
-}
-
-.css-3su884-MuiPaper-root {
-  background-color: rgb(33 45 59) !important;
-  color: rgb(223 229 236) !important;
-}
-
-.css-azc51k-MuiPaper-root { /* list */
-  background-color: rgb(33 45 59) !important;
-  color: rgb(223 229 236) !important;
-}
-
-.css-sghohy-MuiButtonBase-root-MuiButton-root {
-  background-color: rgb(24 24 27) !important;
-  color: rgb(223 229 236) !important;
-}
-
-.css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root, .css-1jy569b-MuiFormLabel-root-MuiInputLabel-root, .css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root {
-  color: rgb(132, 136, 141) !important;
-}

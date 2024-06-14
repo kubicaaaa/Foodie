@@ -16,6 +16,7 @@ public class IngredientController {
     @Autowired
     private IngredientService service;
 
+
     @GetMapping("")
     public List<Ingredient> getAll(){
         return service.findAll();
@@ -40,5 +41,10 @@ public class IngredientController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         service.delete(id);
+    }
+
+    @GetMapping("/recipes")
+    public String getAllRecipes(){
+        return service.generateRecipes();
     }
 }
