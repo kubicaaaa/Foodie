@@ -37,3 +37,11 @@
   }
 }
 
+.recipe-container, .recipe-usage {
+  display: none;
+}
+
+.recipe-container.show, .recipe-usage.show {
+  display: block;
+}
+
