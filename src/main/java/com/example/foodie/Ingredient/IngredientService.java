@@ -52,7 +52,7 @@ public class IngredientService {
                 .build();
 
         MediaType mediaType = MediaType.parse("application/json");
-        String requestBody = "{\"model\":\"cortext-ultra\",\"stream\":false,\"top_p\":1,\"temperature\":0.0001,\"max_tokens\":4096,\"messages\":[{\"role\":\"user\",\"content\":\"One meal recipe but your only ingredients are: " + ingredientsString + ". Use HTML text formating. Only title, ingredients and instructions without comments. \"}]}";
+        String requestBody = "{\"model\":\"cortext-ultra\",\"stream\":false,\"top_p\":1,\"temperature\":0.0001,\"max_tokens\":4096,\"messages\":[{\"role\":\"user\",\"content\":\"One meal recipe but your only ingredients are: " + ingredientsString + ". USE JSON FORMAT. Only title, time, ingredients, instructions and precise usage of used ingredients (json columns: title, time, ingredients, instructions, usage(raw string)) without comments. \"}]}";
         RequestBody body = RequestBody.create(mediaType, requestBody);
         Request request = new Request.Builder()
                 .url("https://api.corcel.io/v1/text/cortext/chat")
