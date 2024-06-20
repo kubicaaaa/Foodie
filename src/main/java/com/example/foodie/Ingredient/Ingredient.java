@@ -16,6 +16,7 @@ public class Ingredient {
     private String name;
     @NotBlank
     private String quantity;
+    private Unit unit;
 
     public Ingredient() {
     }
@@ -42,5 +43,13 @@ public class Ingredient {
 
     public void setQuantity(String quantity) {
         this.quantity = quantity;
+    }
+
+    public Unit getUnit() {
+        return unit;
+    }
+
+    public void setUnit(Unit unit) {
+        this.unit = unit;
     }
 }

@@ -5,11 +5,13 @@ export default function Ingredient() {
   const paperStyle = { padding: '50px 20px', width: 600, margin: "20px auto" };
   const [name, setName] = React.useState('');
   const [quantity, setQuantity] = React.useState('');
+  const [unit, setUnit] = React.useState('');
   const [ingredient, setIngredients] = React.useState([]);
+
 
   const addIngredient = (e) => {
     e.preventDefault();
-    const ingredient = { name, quantity };
+    const ingredient = { name, quantity, unit };
     console.log(ingredient);
     fetch("http://localhost:8080/app", {
       method: "POST",
@@ -25,8 +27,10 @@ export default function Ingredient() {
 
     var textField = document.getElementById("recipes");
     var title = document.getElementById("title");
+    var time = document.getElementById("time");
     var ingredients = document.getElementById("ingredients");
     var instructions = document.getElementById("instructions");
+    var usedIngredients = document.getElementById("used-ingredients");
     var usageField = document.getElementById("usage");
     var showButton = document.getElementById("showButton");
 
@@ -39,8 +43,13 @@ export default function Ingredient() {
         const recipeData = JSON.parse(jsonString);
 
         title.innerHTML = recipeData.title;
+        time.innerHTML = recipeData.time;
         ingredients.innerHTML = '<h2>Ingredients:</h2>' + recipeData.ingredients;
         instructions.innerHTML = '<h2>Instructions:</h2>' + recipeData.instructions;
+        var used = recipeData.usage;
+        for (const ingredient in used) {
+          usedIngredients.innerHTML += (`${ingredient} ${used[ingredient]}, `);
+        }
         showButton.innerText = `Show another recipe`; 
         usageField.classList.add("show");
       })
@@ -50,9 +59,43 @@ export default function Ingredient() {
       });
   }
 
-  function yes() {}
+  function updateIngredients() {
+    const usedIngredients = document.getElementById('used-ingredients');
+    const ingredientsArray = usedIngredients.textContent.split(',').map(item => item.trim());
+  
+    for (const ingredient of ingredientsArray) {
+      if (ingredient === '') continue;
 
-  function no() {}
+      const [name, quantity, unit] = ingredient.split(' ');
+  
+      console.log(`Ingredient: ${name}, Quantity: ${quantity}, Unit: ${unit}`);
+  
+      fetch(`http://localhost:8080/app/find/${name}`)
+        .then(res => res.json())
+        .then((result) => {
+          if (result.length > 0) {
+            console.log(result[0].id);
+            console.log(result[0].quantity);
+            const updatedQuantity = result[0].quantity - quantity;
+            const updatedIngredient = {name, quantity: updatedQuantity, unit};
+            console.log(updatedIngredient);
+            fetch(`http://localhost:8080/app/${result[0].id}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(updatedIngredient)
+            }).then(() => {
+              console.log("Ingredients balance recalculated and updated.");
+              window.location.reload();
+            });
+          } else {
+            console.log(`No data found for ${name}`);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+  }
     
   React.useEffect(() => {
     fetch("http://localhost:8080/app")
@@ -76,6 +119,7 @@ export default function Ingredient() {
         <h1>New ingredient</h1>
         <TextField id="outlined-basic" label="What?" variant="outlined" value={name} onChange={(e) => setName(e.target.value)} style={{ width: '40%' }} />
         <TextField id="outlined-basic" label="How much/many?" variant="outlined" value={quantity} onChange={(e) => setQuantity(e.target.value)} style={{ width: '40%' }} />
+        <TextField id="outlined-basic" label="Unit?" variant="outlined" value={unit} onChange={(e) => setUnit(e.target.value)} style={{ width: '20%' }} />
         <Button variant="contained" style={{ margin: '20px', width: '20%' }} onClick={addIngredient}>Add</Button>
       </Paper>
 
@@ -84,13 +128,14 @@ export default function Ingredient() {
         <Button variant="contained" id="showButton" style={{ margin: '20px', width: '50%' }} onClick={showRecipe}>Show me a recipe</Button>
         <Paper elevation={6} id="recipes" style={{ margin: "10px", padding: "15px", textAlign: "left" }} className="recipe-container">
           <h2 id="title"></h2>
+          <p id="time"></p>
           <p id="ingredients"></p>
           <p id="instructions"></p>
+          <p id="used-ingredients" hidden></p>
         </Paper>
         <Paper elevation={6} id="usage" style={{ margin: "10px", padding: "15px", textAlign: "left" }} className="recipe-usage">
           <h3>Did you use that recipe?</h3>
-          <Button variant="contained" style={{ margin: '5px', width: '48%' }} onClick={no}>No</Button>
-          <Button variant="contained" style={{ margin: '5px', width: '48%' }} onClick={yes}>Yes</Button>
+          <Button variant="contained" style={{ margin: '5px , 5px', width: '100%' }} onClick={updateIngredients}>Yes</Button>
         </Paper>      
       </Paper>
 
@@ -99,7 +144,7 @@ export default function Ingredient() {
         {ingredient.map(ingredient => (
           <Paper elevation={6} style={{ margin: "10px", padding: "15px", textAlign: "left" }} key={ingredient.id}>
             <b>{ingredient.name} </b> 
-            ({ingredient.quantity})
+            ({ingredient.quantity + ingredient.unit})
           </Paper>
         ))}
       </Paper>

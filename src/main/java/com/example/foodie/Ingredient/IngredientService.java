@@ -4,7 +4,6 @@ import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.jupiter.api.Test;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -37,12 +36,21 @@ public class IngredientService {
         repository.deleteById(id);
     }
 
+    public List<Ingredient> findByName(String name) {
+        return repository.listByName(name);
+    }
+
     public String generateRecipes() {
 
         List<Ingredient> ingredients = findAll();
         StringBuilder ingredientsString = new StringBuilder();
         for (Ingredient ingredient : ingredients) {
-            ingredientsString.append(ingredient.getName()).append(", ");
+            ingredientsString.append(ingredient.getName())
+                    .append(" ")
+                    .append(ingredient.getQuantity())
+                    .append(" ")
+                    .append(ingredient.getUnit())
+                    .append(", ");
         }
 
         OkHttpClient client = new OkHttpClient.Builder()
@@ -52,7 +60,8 @@ public class IngredientService {
                 .build();
 
         MediaType mediaType = MediaType.parse("application/json");
-        String requestBody = "{\"model\":\"cortext-ultra\",\"stream\":false,\"top_p\":1,\"temperature\":0.0001,\"max_tokens\":4096,\"messages\":[{\"role\":\"user\",\"content\":\"One meal recipe but your only ingredients are: " + ingredientsString + ". USE JSON FORMAT. Only title, time, ingredients, instructions and precise usage of used ingredients (json columns: title, time, ingredients, instructions, usage(raw string)) without comments. \"}]}";
+        String requestBody = "{\"model\":\"cortext-ultra\",\"stream\":false,\"top_p\":1,\"temperature\":0.0001,\"max_tokens\":4096,\"messages\":[{\"role\":\"user\",\"content\":\"Generate a recipe for a single meal using only the provided ingredients: " + ingredientsString + ". Format the output as JSON with the following keys: title (string), time (string representing total preparation and cooking time), ingredients (string listing ingredients that you plan to use (not all provided) with amounts, e.g. 2 cups flour, 1 tea spoon salt), instructions (array of strings for each step), usage (object with ingredient names as keys and usage amounts as values in kg, ml, g, l, or pcs units, not exceeding the provided amounts). Do not use more of any ingredient than provided. Omit any comments. \"}]}";
+        System.out.println(requestBody);
         RequestBody body = RequestBody.create(mediaType, requestBody);
         Request request = new Request.Builder()
                 .url("https://api.corcel.io/v1/text/cortext/chat")

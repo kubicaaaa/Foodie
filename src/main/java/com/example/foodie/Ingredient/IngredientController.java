@@ -46,4 +46,9 @@ public class IngredientController {
     public String getAllRecipes(){
         return service.generateRecipes();
     }
+
+    @GetMapping("find/{name}")
+    public List<Ingredient> findByName(@PathVariable String name) {
+        return service.findByName(name);
+    }
 }
