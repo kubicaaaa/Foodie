@@ -33,6 +33,7 @@ public class IngredientController {
         if (!service.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ingredient not found");
         }
+        service.delete(id);
         service.add(ingredient);
     }
 

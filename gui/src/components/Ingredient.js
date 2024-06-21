@@ -44,8 +44,29 @@ export default function Ingredient() {
 
         title.innerHTML = recipeData.title;
         time.innerHTML = recipeData.time;
-        ingredients.innerHTML = '<h2>Ingredients:</h2>' + recipeData.ingredients;
+        ingredients.innerHTML = '<h2>Ingredients:</h2>';
+        
+        ingredients.innerHTML += '<ul>';
+
+        const ingredientArray = recipeData.ingredients
+        .split(',')
+        .map(item => item.trim());
+
+        // Create a ul element
+        const ul = document.createElement('ul');
+
+        // Add each ingredient as a list item
+        for (const ingredient of ingredientArray) {
+          const li = document.createElement('li');
+          li.textContent = ingredient;
+          ul.appendChild(li);
+        }
+
+      // Add the list to the ingredients container
+        ingredients.appendChild(ul);
+
         instructions.innerHTML = '<h2>Instructions:</h2>' + recipeData.instructions;
+
         var used = recipeData.usage;
         for (const ingredient in used) {
           usedIngredients.innerHTML += (`${ingredient} ${used[ingredient]}, `);
